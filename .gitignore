@@ -34,4 +34,4 @@ yarn-error.log*
 
 .env
 
-#config.json
+config.json
