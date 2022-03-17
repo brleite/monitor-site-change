@@ -46,19 +46,24 @@ const fs = require('fs');
       console.log("Novo Site obtido");
       // console.log(`Novo Site: ${novoSite}`);
 
-      const currentSite = fs.readFileSync(p.arquivoSite, 'utf8');
+      if (fs.existsSync(p.arquivoSite)) {
+        const currentSite = fs.readFileSync(p.arquivoSite, 'utf8');
 
-      console.log("Site atual obtido");
-      // console.log(`Current Site: ${currentSite}`)
+        console.log("Site atual obtido");
+        // console.log(`Current Site: ${currentSite}`)
 
-      if (novoSite && currentSite && currentSite != novoSite) {
-        const msg = `Houve atualização no site ${p.url}`
-        console.log(msg)
-        utils.sendBotMessage(msg, p.bot_chatIds);
-        fs.writeFileSync(p.arquivoSite, novoSite);
+        if (novoSite && currentSite && currentSite != novoSite) {
+          const msg = `Houve atualização no site ${p.url}`
+          console.log(msg)
+          utils.sendBotMessage(msg, p.bot_chatIds);
+          fs.writeFileSync(p.arquivoSite, novoSite);
+        } else {
+          const msg = `Não Houve atualização no site ${p.url}`
+          console.log(msg)
+        }
       } else {
-        const msg = `Não Houve atualização no site ${p.url}`
-        console.log(msg)
+        console.log(`Arquivo inexistente: ${p.arquivoSite}. Criando um arquivo inicial.`)
+        fs.writeFileSync(p.arquivoSite, novoSite);
       }
     }
     //);
