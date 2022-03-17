@@ -24,13 +24,14 @@ const fs = require('fs');
   console.log("Iniciando chamadas");
 
   try {
-    urls.forEach(p => {
+    for (let p of urls) {
+    // urls.forEach(async p => {
       console.log(`URL: ${p.url}`);
       console.log(`SELETOR: ${p.seletor}`);
       console.log(`ARQUIVO SITE: ${p.arquivoSite}`);
 
       await Promise.all([
-        page.goto(url),
+        page.goto(p.url),
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
 
@@ -38,20 +39,29 @@ const fs = require('fs');
 
       const elementoSeletor = await page.waitForSelector(p.seletor);
 
+      console.log("Seletor localizado");
+
       const novoSite = await page.content();
 
-      console.log(`Novo Site: ${novoSite}`);
+      console.log("Novo Site obtido");
+      // console.log(`Novo Site: ${novoSite}`);
 
       const currentSite = fs.readFileSync(p.arquivoSite, 'utf8');
-      console.log(`Current Site: ${currentSite}`)
+
+      console.log("Site atual obtido");
+      // console.log(`Current Site: ${currentSite}`)
 
       if (novoSite && currentSite && currentSite != novoSite) {
-          utils.sendBotMessage(`Houve atualização no site ${url}`);
-          fs.writeFileSync(p.arquivoSite, novoSite);
+        const msg = `Houve atualização no site ${p.url}`
+        console.log(msg)
+        utils.sendBotMessage(msg, p.bot_chatIds);
+        fs.writeFileSync(p.arquivoSite, novoSite);
       } else {
-          console.log("Nada mudou");
+        const msg = `Não Houve atualização no site ${p.url}`
+        console.log(msg)
       }
-    });
+    }
+    //);
 
     setTimeout(async () => {
       await browser.close();

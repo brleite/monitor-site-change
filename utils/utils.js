@@ -83,20 +83,26 @@ function getEsgotados(str) {
   }
 }
 
-function sendBotMessage(msg) {
+function sendBotMessage(msg, chatIds = null) {
   const TelegramBot = require("node-telegram-bot-api");
   const config = require("../config.json");
 
   const TOKEN = config.bot_token;
 
-  const chatIds = config.bot_chatids;
-
   const bot = new TelegramBot(TOKEN /*, { polling: true }*/);
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
-  chatIds.forEach((p) => {
-    bot.sendMessage(p, msg);
-  });
+  if (chatIds !== null) {
+    chatIds.forEach((p) => {
+      bot.sendMessage(p, msg);
+    });
+  } else {
+    const chatIdsTmp = config.bot_chatIds;
+
+    chatIdsTmp.forEach((p) => {
+      bot.sendMessage(p, msg);
+    });
+  }
 }
 
 module.exports = {
