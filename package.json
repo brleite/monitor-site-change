@@ -1,0 +1,24 @@
+{
+  "name": "puppeteersescbertioga",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "node-telegram-bot-api": "^0.50.0",
+    "puppeteer": "^5.3.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "10.0.1",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-loader": "3.0.4",
+    "eslint-plugin-import": "2.22.1"
+  }
+}
