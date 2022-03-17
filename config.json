@@ -1,0 +1,18 @@
+{
+  "urls": [
+    {
+      "url": "https://xxxx.xxxx.com/teste",
+      "seletor": ".page-gridX",
+      "arquivoSite": "/tmp/currentSiteXXXX.txt",
+      "bot_chatIds": ["-111111111"]
+    },
+    {
+      "url": "https://yyyy.yyyy.com/teste",
+      "seletor": ".page-gridY",
+      "arquivoSite": "/tmp/currentSiteYYYY.txt",
+      "bot_chatIds": ["-111111111", "-222222222"]
+    }
+  ],
+  "bot_token": "11111111111111111111111111111111111",
+  "bot_chatIds": ["-111111111", "-222222222"]
+}
