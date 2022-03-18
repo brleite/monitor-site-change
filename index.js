@@ -38,10 +38,22 @@ const fs = require('fs');
       console.log("goto url");
 
       const elementoSeletor = await page.waitForSelector(p.seletor);
-
       console.log("Seletor localizado");
 
-      const novoSite = await page.content();
+      let novoSite;
+      if (p.verificarSomenteAreaSelecionada == true) {
+        console.log("Verificando somente área selecionada");
+
+        novoSite = await elementoSeletor.evaluate(domElement => {
+          const novoSiteTmp = domElement.innerHTML;
+
+          return novoSiteTmp;
+        });
+      } else {
+        console.log("Verificando página inteira");
+
+        novoSite = await page.content();
+      }
 
       console.log("Novo Site obtido");
       // console.log(`Novo Site: ${novoSite}`);
