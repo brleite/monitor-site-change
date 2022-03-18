@@ -9,6 +9,7 @@
     {
       "url": "https://yyyy.yyyy.com/teste",
       "seletor": ".page-gridY",
+      "verificarSomenteAreaSelecionada": true,
       "arquivoSite": "/tmp/currentSiteYYYY.txt",
       "bot_chatIds": ["-111111111", "-222222222"]
     }
