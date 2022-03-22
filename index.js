@@ -28,7 +28,8 @@ const fs = require('fs');
     // urls.forEach(async p => {
       console.log(`URL: ${p.url}`);
       console.log(`SELETOR: ${p.seletor}`);
-      console.log(`ARQUIVO SITE: ${p.arquivoSite}`);
+      console.log(`ARQUIVO SITE ATUALIZADO: ${p.arquivoSiteAtualizado}`);
+      console.log(`ARQUIVO SITE ANTES DA ATUALIZAÇÃO: ${p.arquivoSiteAntesAtualizacao}`);
 
       await Promise.all([
         page.goto(p.url),
@@ -58,8 +59,8 @@ const fs = require('fs');
       console.log("Novo Site obtido");
       // console.log(`Novo Site: ${novoSite}`);
 
-      if (fs.existsSync(p.arquivoSite)) {
-        const currentSite = fs.readFileSync(p.arquivoSite, 'utf8');
+      if (fs.existsSync(p.arquivoSiteAtualizado)) {
+        const currentSite = fs.readFileSync(p.arquivoSiteAtualizado, 'utf8');
 
         console.log("Site atual obtido");
         // console.log(`Current Site: ${currentSite}`)
@@ -68,14 +69,15 @@ const fs = require('fs');
           const msg = `Houve atualização no site ${p.url}`
           console.log(msg)
           utils.sendBotMessage(msg, p.bot_chatIds);
-          fs.writeFileSync(p.arquivoSite, novoSite);
+          fs.writeFileSync(p.arquivoSiteAtualizado, novoSite);
+          fs.writeFileSync(p.arquivoSiteAntesAtualizacao, currentSite);
         } else {
           const msg = `Não Houve atualização no site ${p.url}`
           console.log(msg)
         }
       } else {
-        console.log(`Arquivo inexistente: ${p.arquivoSite}. Criando um arquivo inicial.`)
-        fs.writeFileSync(p.arquivoSite, novoSite);
+        console.log(`Arquivo inexistente: ${p.arquivoSiteAtualizado}. Criando um arquivo inicial.`)
+        fs.writeFileSync(p.arquivoSiteAtualizado, novoSite);
       }
     }
     //);

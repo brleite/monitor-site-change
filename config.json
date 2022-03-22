@@ -3,14 +3,16 @@
     {
       "url": "https://xxxx.xxxx.com/teste",
       "seletor": ".page-gridX",
-      "arquivoSite": "/tmp/currentSiteXXXX.txt",
+      "arquivoSiteAtualizado": "/tmp/currentSiteXXXX.txt",
+      "arquivoSiteAntesAtualizacao": "/tmp/lastSiteXXXX.txt",
       "bot_chatIds": ["-111111111"]
     },
     {
       "url": "https://yyyy.yyyy.com/teste",
       "seletor": ".page-gridY",
       "verificarSomenteAreaSelecionada": true,
-      "arquivoSite": "/tmp/currentSiteYYYY.txt",
+      "arquivoSiteAtualizado": "/tmp/currentSiteYYYY.txt",
+      "arquivoSiteAntesAtualizacao": "/tmp/lastSiteYYYY.txt",
       "bot_chatIds": ["-111111111", "-222222222"]
     }
   ],
