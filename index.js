@@ -119,7 +119,8 @@ const jsdiff = require('./utils/jsdiff');
           await page.screenshot({
             path: p.arquivoSiteAlteracoesScreenshot,
             fullPage: true,
-            type: "jpeg"
+            type: "jpeg",
+            quality: 100
           });
 
           siteAlteracoes = await page.content();
