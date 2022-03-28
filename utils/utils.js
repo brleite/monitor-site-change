@@ -105,6 +105,29 @@ function sendBotMessage(msg, chatIds = null) {
   }
 }
 
+function sendBotImage(image, caption, chatIds = null) {
+  const TelegramBot = require("node-telegram-bot-api");
+  const config = require("../config.json");
+
+  const TOKEN = config.bot_token;
+
+  const bot = new TelegramBot(TOKEN /*, { polling: true }*/);
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+  if (chatIds !== null) {
+    chatIds.forEach((p) => {
+      bot.sendPhoto(p, image, { caption: caption });
+    });
+  } else {
+    const chatIdsTmp = config.bot_chatIds;
+
+    chatIdsTmp.forEach((p) => {
+      bot.sendMessage(p, msg);
+      bot.sendPhoto(p, image, { caption: caption });
+    });
+  }
+}
+
 module.exports = {
   getFlagDisponiveis,
   getFlagEsgotados,
@@ -115,4 +138,5 @@ module.exports = {
   existemEsgotados,
   getEsgotados,
   sendBotMessage,
+  sendBotImage,
 };

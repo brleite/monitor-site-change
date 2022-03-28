@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "diff-match-patch": "^1.0.5",
     "fs": "0.0.1-security",
+    "js-beautify": "^1.14.0",
     "node-telegram-bot-api": "^0.50.0",
     "puppeteer": "^5.3.0"
   },

@@ -2,6 +2,8 @@ const puppeteer = require("puppeteer");
 const config = require("./config.json");
 const utils = require("./utils/utils");
 const fs = require('fs');
+const diff_match_patch = require('diff-match-patch');
+const jsdiff = require('./utils/jsdiff');
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -11,6 +13,8 @@ const fs = require('fs');
     // devtools: true,
   });
   const page = await browser.newPage();
+
+  page.setDefaultNavigationTimeout(300000);
 
   // Mostra console para o evaluate
   page.on("console", (consoleObj) => {
@@ -30,6 +34,10 @@ const fs = require('fs');
       console.log(`SELETOR: ${p.seletor}`);
       console.log(`ARQUIVO SITE ATUALIZADO: ${p.arquivoSiteAtualizado}`);
       console.log(`ARQUIVO SITE ANTES DA ATUALIZAÇÃO: ${p.arquivoSiteAntesAtualizacao}`);
+      console.log(`ARQUIVO SITE ALTERAÇÕES: ${p.arquivoSiteAlteracoes}`);
+      console.log(`ARQUIVO SITE ALTERAÇÔES SCREENSHOT: ${p.arquivoSiteAlteracoesScreenshot}`);
+
+      // await page.exposeFunction("getConfig", () => p);
 
       await Promise.all([
         page.goto(p.url),
@@ -56,6 +64,9 @@ const fs = require('fs');
         novoSite = await page.content();
       }
 
+      var beautify_html = require('js-beautify').html;
+      novoSite = beautify_html(novoSite, { indent_size: 2 })
+
       console.log("Novo Site obtido");
       // console.log(`Novo Site: ${novoSite}`);
 
@@ -68,9 +79,57 @@ const fs = require('fs');
         if (novoSite && currentSite && currentSite != novoSite) {
           const msg = `Houve atualização no site ${p.url}`
           console.log(msg)
-          utils.sendBotMessage(msg, p.bot_chatIds);
+
+          /* const diff = new diff_match_patch.diff_match_patch();
+          const diffs = diff.diff_main(currentSite, novoSite);
+          diff.diff_cleanupSemantic(diffs)
+          const alteracoes = diff.diff_prettyHtml(diffs); */
+          const alteracoes = jsdiff.diffString(currentSite, novoSite);
+
+          // console.log(alteracoes);
+
+          // await page.exposeFunction("getAlteracoes", () => alteracoes);
+          // console.log(jsdiff.diffString(currentSite, novoSite));
+          // console.log(jsdiff);
+
+          if (config.notify) {
+            utils.sendBotMessage(msg, p.bot_chatIds);
+          }
+
           fs.writeFileSync(p.arquivoSiteAtualizado, novoSite);
           fs.writeFileSync(p.arquivoSiteAntesAtualizacao, currentSite);
+
+          /* if (p.verificarSomenteAreaSelecionada == true) {
+            await page.evaluate(async () => {
+              let dom = document.querySelector((await getConfig()).seletor);
+              dom.innerHTML = await getAlteracoes();
+            });
+          } else {
+
+          } */
+          if (p.verificarSomenteAreaSelecionada == true) {
+            await page.evaluate(async ([seletor, newInnerHTML]) => {
+              let dom = document.querySelector(seletor);
+              dom.innerHTML = newInnerHTML;
+            }, [p.seletor, alteracoes]);
+          } else {
+            await page.setContent(alteracoes)
+          }
+
+          await page.screenshot({
+            path: p.arquivoSiteAlteracoesScreenshot,
+            fullPage: true,
+            type: "jpeg"
+          });
+
+          siteAlteracoes = await page.content();
+          fs.writeFileSync(p.arquivoSiteAlteracoes, siteAlteracoes);
+
+          if (config.notify && p.arquivoSiteAlteracoesScreenshot) {
+            utils.sendBotImage(p.arquivoSiteAlteracoesScreenshot, "Alterações", p.bot_chatIds);
+          }
+
+          // fs.writeFileSync(p.arquivoSiteAlteracoes, alteracoes);
         } else {
           const msg = `Não Houve atualização no site ${p.url}`
           console.log(msg)

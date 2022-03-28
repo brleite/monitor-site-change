@@ -1,21 +1,19 @@
 {
+  "user": "xxxxxx@yyyyy.com",
+  "password": "XXXXXX",
+  "notify": true,
   "urls": [
     {
-      "url": "https://xxxx.xxxx.com/teste",
-      "seletor": ".page-gridX",
-      "arquivoSiteAtualizado": "/tmp/currentSiteXXXX.txt",
-      "arquivoSiteAntesAtualizacao": "/tmp/lastSiteXXXX.txt",
-      "bot_chatIds": ["-111111111"]
-    },
-    {
-      "url": "https://yyyy.yyyy.com/teste",
-      "seletor": ".page-gridY",
+      "url": "https://www.cebraspe.org.br/concursos/TCE_RJ_21_ANALISTA",
+      "seletor": ".content_inner",
       "verificarSomenteAreaSelecionada": true,
-      "arquivoSiteAtualizado": "/tmp/currentSiteYYYY.txt",
-      "arquivoSiteAntesAtualizacao": "/tmp/lastSiteYYYY.txt",
-      "bot_chatIds": ["-111111111", "-222222222"]
+      "arquivoSiteAtualizado": "C:\\temp\\currentSiteTCERJ2022.txt",
+      "arquivoSiteAntesAtualizacao": "C:\\temp\\lastSiteTCERJ2022.txt",
+      "arquivoSiteAlteracoes": "C:\\temp\\alteracoesTCERJ2022.html",
+      "arquivoSiteAlteracoesScreenshot": "C:\\temp\\alteracoesTCERJ2022.jpg",
+      "bot_chatIds": ["-11111111"]
     }
   ],
-  "bot_token": "11111111111111111111111111111111111",
-  "bot_chatIds": ["-111111111", "-222222222"]
+  "bot_token": "XXXXXXXXX",
+  "bot_chatIds": ["-11111111"]
 }
