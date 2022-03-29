@@ -126,6 +126,10 @@ const jsdiff = require('./utils/jsdiff');
           siteAlteracoes = await page.content();
           fs.writeFileSync(p.arquivoSiteAlteracoes, siteAlteracoes);
 
+          if (config.notify && p.arquivoSiteAlteracoes) {
+            utils.sendBotDocument(p.arquivoSiteAlteracoes, "HTML com as alterações", p.bot_chatIds);
+          }
+
           if (config.notify && p.arquivoSiteAlteracoesScreenshot) {
             utils.sendBotImage(p.arquivoSiteAlteracoesScreenshot, "Alterações", p.bot_chatIds);
           }

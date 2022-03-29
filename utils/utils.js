@@ -122,8 +122,29 @@ function sendBotImage(image, caption, chatIds = null) {
     const chatIdsTmp = config.bot_chatIds;
 
     chatIdsTmp.forEach((p) => {
-      bot.sendMessage(p, msg);
       bot.sendPhoto(p, image, { caption: caption });
+    });
+  }
+}
+
+function sendBotDocument(document, caption, chatIds = null) {
+  const TelegramBot = require("node-telegram-bot-api");
+  const config = require("../config.json");
+
+  const TOKEN = config.bot_token;
+
+  const bot = new TelegramBot(TOKEN /*, { polling: true }*/);
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+  if (chatIds !== null) {
+    chatIds.forEach((p) => {
+      bot.sendDocument(p, document, { caption: caption });
+    });
+  } else {
+    const chatIdsTmp = config.bot_chatIds;
+
+    chatIdsTmp.forEach((p) => {
+      bot.sendPhoto(p, document, { caption: caption });
     });
   }
 }
@@ -139,4 +160,5 @@ module.exports = {
   getEsgotados,
   sendBotMessage,
   sendBotImage,
+  sendBotDocument,
 };
