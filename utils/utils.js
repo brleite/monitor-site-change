@@ -149,6 +149,16 @@ function sendBotDocument(document, caption, chatIds = null) {
   }
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function log(message) {
+  const d = new Date().toLocaleString();
+
+  console.log(`[${d}] ${message}`);
+}
+
 module.exports = {
   getFlagDisponiveis,
   getFlagEsgotados,
@@ -161,4 +171,6 @@ module.exports = {
   sendBotMessage,
   sendBotImage,
   sendBotDocument,
+  sleep,
+  log,
 };

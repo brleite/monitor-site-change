@@ -19,23 +19,24 @@ const jsdiff = require('./utils/jsdiff');
   // Mostra console para o evaluate
   page.on("console", (consoleObj) => {
     if (consoleObj.type() === "log") {
-      console.log(consoleObj.text());
+      utils.log(consoleObj.text());
     }
   });
 
   const urls = config.urls;
 
-  console.log("Iniciando chamadas");
+  utils.log("Iniciando chamadas");
 
   try {
     for (let p of urls) {
     // urls.forEach(async p => {
-      console.log(`URL: ${p.url}`);
-      console.log(`SELETOR: ${p.seletor}`);
-      console.log(`ARQUIVO SITE ATUALIZADO: ${p.arquivoSiteAtualizado}`);
-      console.log(`ARQUIVO SITE ANTES DA ATUALIZAÇÃO: ${p.arquivoSiteAntesAtualizacao}`);
-      console.log(`ARQUIVO SITE ALTERAÇÕES: ${p.arquivoSiteAlteracoes}`);
-      console.log(`ARQUIVO SITE ALTERAÇÔES SCREENSHOT: ${p.arquivoSiteAlteracoesScreenshot}`);
+      utils.log(`URL: ${p.url}`);
+      utils.log(`SELETOR: ${p.seletor}`);
+      utils.log(`ARQUIVO SITE ATUALIZADO: ${p.arquivoSiteAtualizado}`);
+      utils.log(`ARQUIVO SITE ANTES DA ATUALIZAÇÃO: ${p.arquivoSiteAntesAtualizacao}`);
+      utils.log(`ARQUIVO SITE ALTERAÇÕES: ${p.arquivoSiteAlteracoes}`);
+      utils.log(`ARQUIVO SITE ALTERAÇÔES SCREENSHOT: ${p.arquivoSiteAlteracoesScreenshot}`);
+      utils.log(`DELAY: ${p.delay}`);
 
       // await page.exposeFunction("getConfig", () => p);
 
@@ -44,14 +45,18 @@ const jsdiff = require('./utils/jsdiff');
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
 
-      console.log("goto url");
+      if (p.delay) {
+        await utils.sleep(p.delay);      
+      }
+
+      utils.log("goto url");
 
       const elementoSeletor = await page.waitForSelector(p.seletor);
-      console.log("Seletor localizado");
+      utils.log("Seletor localizado");
 
       let novoSite;
       if (p.verificarSomenteAreaSelecionada == true) {
-        console.log("Verificando somente área selecionada");
+        utils.log("Verificando somente área selecionada");
 
         novoSite = await elementoSeletor.evaluate(domElement => {
           const novoSiteTmp = domElement.innerHTML;
@@ -59,7 +64,7 @@ const jsdiff = require('./utils/jsdiff');
           return novoSiteTmp;
         });
       } else {
-        console.log("Verificando página inteira");
+        utils.log("Verificando página inteira");
 
         novoSite = await page.content();
       }
@@ -67,18 +72,18 @@ const jsdiff = require('./utils/jsdiff');
       var beautify_html = require('js-beautify').html;
       novoSite = beautify_html(novoSite, { indent_size: 2 })
 
-      console.log("Novo Site obtido");
-      // console.log(`Novo Site: ${novoSite}`);
+      utils.log("Novo Site obtido");
+      // utils.log(`Novo Site: ${novoSite}`);
 
       if (fs.existsSync(p.arquivoSiteAtualizado)) {
         const currentSite = fs.readFileSync(p.arquivoSiteAtualizado, 'utf8');
 
-        console.log("Site atual obtido");
-        // console.log(`Current Site: ${currentSite}`)
+        utils.log("Site atual obtido");
+        // utils.log(`Current Site: ${currentSite}`)
 
         if (novoSite && currentSite && currentSite != novoSite) {
           const msg = `Houve atualização no site ${p.url}`
-          console.log(msg)
+          utils.log(msg)
 
           /* const diff = new diff_match_patch.diff_match_patch();
           const diffs = diff.diff_main(currentSite, novoSite);
@@ -86,11 +91,11 @@ const jsdiff = require('./utils/jsdiff');
           const alteracoes = diff.diff_prettyHtml(diffs); */
           const alteracoes = jsdiff.diffString(currentSite, novoSite);
 
-          // console.log(alteracoes);
+          // utils.log(alteracoes);
 
           // await page.exposeFunction("getAlteracoes", () => alteracoes);
-          // console.log(jsdiff.diffString(currentSite, novoSite));
-          // console.log(jsdiff);
+          // utils.log(jsdiff.diffString(currentSite, novoSite));
+          // utils.log(jsdiff);
 
           if (config.notify) {
             utils.sendBotMessage(msg, p.bot_chatIds);
@@ -137,10 +142,10 @@ const jsdiff = require('./utils/jsdiff');
           // fs.writeFileSync(p.arquivoSiteAlteracoes, alteracoes);
         } else {
           const msg = `Não Houve atualização no site ${p.url}`
-          console.log(msg)
+          utils.log(msg)
         }
       } else {
-        console.log(`Arquivo inexistente: ${p.arquivoSiteAtualizado}. Criando um arquivo inicial.`)
+        utils.log(`Arquivo inexistente: ${p.arquivoSiteAtualizado}. Criando um arquivo inicial.`)
         fs.writeFileSync(p.arquivoSiteAtualizado, novoSite);
       }
     }
@@ -149,10 +154,10 @@ const jsdiff = require('./utils/jsdiff');
     setTimeout(async () => {
       await browser.close();
 
-      console.log("Fim");
+      utils.log("Fim");
     }, 2000);
   } catch (e) {
-    console.log(e);
+    utils.log(e);
     await browser.close();
   }
 })();
