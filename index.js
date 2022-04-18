@@ -4,6 +4,7 @@ const utils = require("./utils/utils");
 const fs = require('fs');
 const diff_match_patch = require('diff-match-patch');
 const jsdiff = require('./utils/jsdiff');
+const diff = require('node-htmldiff');
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -46,7 +47,7 @@ const jsdiff = require('./utils/jsdiff');
       ]);
 
       if (p.delay) {
-        await utils.sleep(p.delay);      
+        await utils.sleep(p.delay);
       }
 
       utils.log("goto url");
@@ -89,7 +90,8 @@ const jsdiff = require('./utils/jsdiff');
           const diffs = diff.diff_main(currentSite, novoSite);
           diff.diff_cleanupSemantic(diffs)
           const alteracoes = diff.diff_prettyHtml(diffs); */
-          const alteracoes = jsdiff.diffString(currentSite, novoSite);
+          // const alteracoes = jsdiff.diffString(currentSite, novoSite);
+          const alteracoes = diff(currentSite, novoSite);
 
           // utils.log(alteracoes);
 
@@ -120,6 +122,9 @@ const jsdiff = require('./utils/jsdiff');
           } else {
             await page.setContent(alteracoes)
           }
+
+          await page.addStyleTag({content: 'del {background-color: tomato;}'})
+          await page.addStyleTag({content: 'ins {background-color: lightgreen;}'})
 
           await page.screenshot({
             path: p.arquivoSiteAlteracoesScreenshot,
