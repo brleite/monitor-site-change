@@ -12,6 +12,15 @@ const diff = require('node-htmldiff');
     headless: true,
     slowMo: 50, // slow down by ms
     // devtools: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-infobars',
+      '--window-position=0,0',
+      '--ignore-certifcate-errors',
+      '--ignore-certifcate-errors-spki-list',
+      '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+      ],
   });
   const page = await browser.newPage();
 
@@ -51,24 +60,75 @@ const diff = require('node-htmldiff');
       }
 
       utils.log("goto url");
+      pageTmp = await page.content();
+      // console.log(pageTmp);
 
-      const elementoSeletor = await page.waitForSelector(p.seletor);
-      utils.log("Seletor localizado");
-
+      let verificarSomenteAreaSelecionada = false;
+      let seletorComparacao;
       let novoSite;
-      if (p.verificarSomenteAreaSelecionada == true) {
-        utils.log("Verificando somente área selecionada");
+      if (p.operacoes && p.operacoes.length > 0) {
+        console.log('inicio operações')
+        for (let operacao of p.operacoes) {
+          if (operacao.tipo === 'click') {
+            console.log('inicio operação click');
 
-        novoSite = await elementoSeletor.evaluate(domElement => {
-          const novoSiteTmp = domElement.innerHTML;
+            const seletorClick = operacao.seletor;
+            console.log(seletorClick);
 
-          return novoSiteTmp;
-        });
+            await page.waitForSelector(seletorClick);
+            console.log("wait for selector")
+            await page.click(seletorClick);
+            console.log("click selector")
+            // await page.waitForNavigation();
+            // console.log("wait for navigation")
+
+            console.log('fim operação click');
+          } else if (operacao.tipo === 'wait') {
+            console.log('inicio operação wait');
+
+            const seletorWait = operacao.seletor;
+            console.log(seletorWait);
+
+            const operacaoSeletor = await page.waitForSelector(seletorWait);
+            console.log("wait for selector")
+
+            if (operacao.verificarSomenteAreaSelecionada) {
+              verificarSomenteAreaSelecionada = true;
+              seletorComparacao = seletorWait;
+              novoSite = await operacaoSeletor.evaluate(domElement => {
+                const novoSiteTmp = domElement.innerHTML;
+
+                return novoSiteTmp;
+              });
+            }
+
+            console.log('fim operação wait');
+          }
+        }
       } else {
-        utils.log("Verificando página inteira");
+        const elementoSeletor = await page.waitForSelector(p.seletor);
+        utils.log("Seletor localizado");
 
-        novoSite = await page.content();
+        if (p.verificarSomenteAreaSelecionada == true) {
+          utils.log("Verificando somente área selecionada");
+
+          verificarSomenteAreaSelecionada = true;
+          seletorComparacao = p.seletor;
+          console.log(seletorComparacao);
+          novoSite = await elementoSeletor.evaluate(domElement => {
+            const novoSiteTmp = domElement.innerHTML;
+
+            return novoSiteTmp;
+          });
+          // console.log(novoSite);
+        } else {
+          utils.log("Verificando página inteira");
+
+          verificarSomenteAreaSelecionada = false;
+          novoSite = await page.content();
+        }
       }
+
 
       var beautify_html = require('js-beautify').html;
       novoSite = beautify_html(novoSite, { indent_size: 2 })
@@ -80,6 +140,10 @@ const diff = require('node-htmldiff');
         const currentSite = fs.readFileSync(p.arquivoSiteAtualizado, 'utf8');
 
         utils.log("Site atual obtido");
+        /* utils.log("currentSite");
+        console.log(currentSite)
+        utils.log("novoSite");
+        utils.log(novoSite); */
         // utils.log(`Current Site: ${currentSite}`)
 
         if (novoSite && currentSite && currentSite != novoSite) {
@@ -114,11 +178,11 @@ const diff = require('node-htmldiff');
           } else {
 
           } */
-          if (p.verificarSomenteAreaSelecionada == true) {
+          if (verificarSomenteAreaSelecionada === true) {
             await page.evaluate(async ([seletor, newInnerHTML]) => {
               let dom = document.querySelector(seletor);
               dom.innerHTML = newInnerHTML;
-            }, [p.seletor, alteracoes]);
+            }, [seletorComparacao, alteracoes]);
           } else {
             await page.setContent(alteracoes)
           }
